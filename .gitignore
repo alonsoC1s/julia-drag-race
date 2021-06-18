@@ -1,0 +1,9 @@
+.*.m.swp
+.vscode/
+
+node_modules
+tablas/server_output.csv
+tablas/server_input.csv
+.nvimlog
+.DS_Store
+*.ipynb
