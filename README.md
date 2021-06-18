@@ -9,7 +9,7 @@ elementary operations to:
 
 1. Make `A[i, j]` equal to 1.
 2. Make the remaining entries on the column (`A[1, j], ... , A[i-1,
-   j], A[i+1, j], ..., A[end, j]` equal to 1.
+   j], A[i+1, j], ..., A[end, j]` equal to 0.
 
 The elementary row operations described by the algorithm are carried
 out essentially by one of two methods:
