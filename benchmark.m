@@ -3,25 +3,25 @@ function [Results] = benchmark(reps)
 	% Creando tabla para guardar resultados
 	tsize = [0, 4],
 	vtypes = ["string", "string", "double", "double"];
-	vnames = ["lang", "metodo", "dim", "tiempo"]
+	vnames = ["lang", "method", "dim", "time"]
 	raw = table('Size', tsize,'VariableTypes', vtypes, 'VariableNames', vnames);
 
 	for dim = 100:100:1500
-		% Aqui crear A y su indice de acceso.
-		% con rng(97) se seedea el MersenneTwister
+		% Creating the matrix A and its random index
+		% Seeding the Mersenne Twister so the randomly generated A is the same as in Julia
 		rng(98, "twister")
-		% Fijando el rango
+		% Setting a range (a, b)
 		b = -100;
 		a = 100;
-		% Matriz random en el rango con el seed deseado
+		% Random matrix with specified range and seed
 		A = (b-a) .* rand(dim, dim) + a;
-		% Poniendo el seed otra vez porque Matlab "resetea" el twister cada que se llama rand.
+		% Re-seeding the generator because Matlab resets it after calling rand
 		rng(98, "twister")
-		% Generando un indice aleatorio para accesar A.
+		% Generating a random index to access.
 		idx = randi([1, dim], 1, 2);
 
-		% Corriendo pruebas
-		% pivote Gauss
+		% Running the tests
+		% Gaussian pivoting
 		for iter = 1:reps
 			pivStart = tic;
 			pivotGauss(A, idx(1), idx(2));
@@ -30,7 +30,7 @@ function [Results] = benchmark(reps)
 			raw = [raw; {"Matlab", "pivotGauss", dim, pivTime}];
 		end
 
-		% pivote hibrido
+		% Hybrid pivoting
 		for iter = 1:reps
 			pivStart = tic;
 			pivotHybrid(A, idx(1), idx(2));
@@ -39,7 +39,7 @@ function [Results] = benchmark(reps)
 			raw = [raw; {"Matlab", "pivotHybrid", dim, pivTime}];
 		end
 
-		% pivote simple
+		% Simple pivoting
 		for iter = 1:reps
 			pivStart = tic;
 			pivotSimple(A, idx(1), idx(2));
@@ -49,6 +49,6 @@ function [Results] = benchmark(reps)
 		end
 
 	end
-	% Guardando resultados
+	% Storing results in a csv
 	writetable(raw, "benchmarks/matlab.csv")
 end
