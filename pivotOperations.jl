@@ -80,6 +80,19 @@ function pivotSimple(A, i, j)
 	return A
 end
 
+function pivotSimpleView(A, i, j)
+    # Dividing the row to get the principal 1.
+    A[i, :] = @view(A[i, :]) ./ A[i, j]
+
+    for irow = 1:size(A,1)
+        if irow != i
+            A[irow, :] = @view(A[irow, :]) .- @view(A[i, :]) .* A[irow, j]
+        end
+    end
+
+    return A
+end
+
 """
 	pivotSimpleInbounds(A, i, j)
 Performs a pivot operation on `A` using a annotated for loops. Intented to test the perfomance gains
@@ -111,6 +124,53 @@ function pivotSimpleParallel(A, i, j)
 	end
 
 	return A
+end
+
+function pivotGaussNew(A::Matrix{Float64}, i::Int, j::Int)
+    m, _ = size(A)
+    # First we divide the pivot row by the pivot value so the pivot (A[i, j]) becomes a principal 1.
+    # The idea is to perform every operation on the matrix as a matrix product.
+    # d is a vector that will be used later to create a diagonal matrix.
+    d = vec([ones(i-1, 1); A[i,j]^-1; ones(m-i, 1)])
+    D = Matrix(Diagonal(d))
+    # The product D * A performs the division (yes I realize I could use ./)
+    A = D * A
+
+    # Getting the multiples such that R[:, j] - efes .* A[i, j] = 0
+    efes = @view A[:, j]
+
+    # Allocating an identity matrix that will be modified to become elementary.
+    E = Matrix{Float64}(I, m, m)
+    # Modifying E to make it elementary and perform the desired operation
+    E[:, i] = -efes
+    E[i, :] = -E[i, :] # Ugly. Corrects sign error so thet we don't get a -1
+    # Returns the result of the product wich is the pivoted matrix
+    mul!(D, E, A)
+    return D
+end
+
+function pivotGaussplainfor(A::Matrix{Float64}, i::Int, j::Int)
+    n, m = size(A)
+    M = copy(A)
+    p = M[i,j]
+    for l = 1:m
+        M[i,l] = M[i,l]/p
+    end
+    for k = 1:n
+        if k != i
+            for l = 1:m
+                if l != j
+                    M[k,l] = M[k,l] - M[i,l] * M[k,j]
+                end
+            end
+        end
+    end
+    for k = 1:n
+        if k != i
+            M[k,j] = 0
+        end
+    end
+    return M
 end
 
 end
