@@ -9,9 +9,21 @@ function benchmarkNaive(reps)
 		dim = Int[],
 		time = Float64[])
 
+		allFunctions = [
+			pivotGauss,
+			pivotSimple,
+			pivotHybrid,
+			pivotSimpleInbounds,
+			pivotSimpleParallel,
+			pivotSimpleView,
+			pivotSimpleView!,
+			pivotGaussNew,
+			pivotGaussplainfor
+		]
+
     @inbounds for dim in 100:100:1500
 
-		@inbounds for pivFunc in [pivotGauss, pivotHybrid, pivotSimple, pivotSimpleInbounds, pivotSimpleParallel]
+		@inbounds for pivFunc in allFunctions
 
 			# Seed a MersenneTwister to generate a random matrix of specified dimensions
 			A = rand(MersenneTwister(98), float(collect(-100:100)), (dim, dim))

@@ -3,7 +3,8 @@ using LinearAlgebra
 using .Threads
 
 export pivotGauss, pivotSimple, pivotHybrid, pivotSimpleInbounds
-export pivotSimpleParallel
+export pivotSimpleParallel, pivotSimpleView, pivotSimpleView!
+export pivotGaussNew, pivotGaussplainfor
 
 """
 	pivotGauss(A, i, j)
@@ -80,6 +81,21 @@ function pivotSimple(A, i, j)
 	return A
 end
 
+
+function pivotSimpleView!(A, i, j)
+    # Dividing the row to get the principal 1.
+    A[i, :] .= @view(A[i, :]) ./ A[i, j]
+
+    for irow = 1:size(A,1)
+        if irow != i
+            A[irow, :] .= @view(A[irow, :]) .- @view(A[i, :]) .* A[irow, j]
+        end
+    end
+
+    return A
+end
+
+
 function pivotSimpleView(A, i, j)
     # Dividing the row to get the principal 1.
     A[i, :] = @view(A[i, :]) ./ A[i, j]
@@ -149,6 +165,7 @@ function pivotGaussNew(A::Matrix{Float64}, i::Int, j::Int)
     return D
 end
 
+
 function pivotGaussplainfor(A::Matrix{Float64}, i::Int, j::Int)
     n, m = size(A)
     M = copy(A)
@@ -156,10 +173,10 @@ function pivotGaussplainfor(A::Matrix{Float64}, i::Int, j::Int)
     for l = 1:m
         M[i,l] = M[i,l]/p
     end
-    for k = 1:n
-        if k != i
-            for l = 1:m
-                if l != j
+    for l = 1:m
+        if l != j
+            for k = 1:n
+                if k != i
                     M[k,l] = M[k,l] - M[i,l] * M[k,j]
                 end
             end
@@ -167,7 +184,7 @@ function pivotGaussplainfor(A::Matrix{Float64}, i::Int, j::Int)
     end
     for k = 1:n
         if k != i
-            M[k,j] = 0
+            M[k,j] = 0.0
         end
     end
     return M

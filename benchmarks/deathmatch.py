@@ -26,7 +26,7 @@ lpdefaults = {"x": "dim", "y": "time", "hue": "method"}
 
 
 # %%
-julia = pd.read_csv("julia.csv")
+# julia = pd.read_csv("julia.csv")
 julia_d = pd.read_csv("julia_dumb.csv")
 matlab = pd.read_csv("matlab.csv")
 
@@ -54,7 +54,7 @@ ax.set_ylim((0, 0.10))
 sns.lineplot(**lpdefaults, style="lang", data=both, ax=ax)
 
 # %%
-only_simple = both[both.metodo.str.startswith("pivotSimple")]
+only_simple = both[both.method.str.startswith("pivotSimple")]
 sns.lineplot(**lpdefaults, style="lang", data=only_simple)
 
 plt.savefig("simple_pivot.png")
