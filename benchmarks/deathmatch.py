@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 
 sns.set(style="darkgrid")
 
-# matplotlib.use("module://matplotlib-backend-kitty")
+matplotlib.use("module://matplotlib-backend-kitty")
 
 lpdefaults = {"x": "dim", "y": "time", "hue": "method"}
 
@@ -29,24 +29,20 @@ lpdefaults = {"x": "dim", "y": "time", "hue": "method"}
 # julia = pd.read_csv("julia.csv")
 julia_d = pd.read_csv("julia_dumb.csv")
 matlab = pd.read_csv("matlab.csv")
-
-# %%
-sns.lineplot(**lpdefaults, data=julia)
+python = pd.read_csv("python.csv")
 
 # %%
 sns.lineplot(**lpdefaults, data=julia_d)
 
 # %%
-julias = pd.concat([julia, julia_d])
-fig, ax = plt.subplots()
-# ax.set_ylim((0, .25))
-sns.lineplot(**lpdefaults, data=julias, ax=ax)
+sns.lineplot(**lpdefaults, data=python)
 
 # %%
 sns.lineplot(**lpdefaults, data=matlab)
 
 # %%
 both = pd.concat([julia_d, matlab])
+alls = pd.concat([julia_d, matlab, python])
 
 # %%
 fig, ax = plt.subplots()

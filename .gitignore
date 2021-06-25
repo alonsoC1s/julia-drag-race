@@ -7,3 +7,4 @@ tablas/server_input.csv
 .nvimlog
 .DS_Store
 *.ipynb
+__pycache__/
